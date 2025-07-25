@@ -19,7 +19,7 @@
   - `CreateRequest`, `UpdateRequest`, `DeleteRequest` with dynamic `InputParameters`
   - `Associate` / `Disassociate`
   - `Execute` and `ExecuteAsync`
-- Support for `RowVersion`/concurrency on `Update` and `Delete`
+- Support for `RowVersion`/ `concurrency` on `Update` and `Delete`
 
 ---
 
