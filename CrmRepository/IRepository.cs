@@ -21,14 +21,14 @@ public interface IRepository<T> where T : Entity
     Guid Create(T entity);
     Task<Guid> CreateAsync(T entity);
 
-    void Update(T entity, string rowVersion = null);
-    Task UpdateAsync(T entity, string rowVersion = null);
+    void Update(T entity);
+    Task UpdateAsync(T entity);
 
     void Upsert(T entity);
     Task UpsertAsync(T entity);
 
-    void Delete(Guid id, string rowVersion = null);
-    Task DeleteAsync(Guid id, string rowVersion = null);
+    void Delete(Guid id);
+    Task DeleteAsync(Guid id);
 
     bool Exists(IEnumerable<ConditionExpression> conditions);
     Task<bool> ExistsAsync(IEnumerable<ConditionExpression> conditions);
