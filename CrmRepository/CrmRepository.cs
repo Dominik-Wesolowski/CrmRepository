@@ -84,25 +84,13 @@ public class CrmRepository<T> : IRepository<T> where T : Entity
     public async Task UpsertAsync(T entity)
         => await Task.Run(() => Upsert(entity));
 
-    public void Delete(Guid id, string rowVersion = null)
+    public void Delete(Guid id)
     {
-        if (!string.IsNullOrWhiteSpace(rowVersion))
-        {
-            var entityRef = new EntityReference(_entityLogicalName, id)
-            {
-                RowVersion = rowVersion
-            };
-            var request = new DeleteRequest { Target = entityRef };
-            _service.Execute(request);
-        }
-        else
-        {
-            DeleteWithRequest(id);
-        }
+        _service.Delete(_entityLogicalName, id);
     }
 
-    public async Task DeleteAsync(Guid id, string rowVersion = null)
-        => await Task.Run(() => Delete(id, rowVersion));
+    public async Task DeleteAsync(Guid id)
+        => await Task.Run(() => Delete(id));
 
     public bool Exists(IEnumerable<ConditionExpression> conditions)
     {
@@ -113,13 +101,18 @@ public class CrmRepository<T> : IRepository<T> where T : Entity
             Criteria = new FilterExpression()
         };
 
-        foreach (var condition in conditions) queryExpression.Criteria.AddCondition(condition);
-        var response = _service.RetrieveMultiple(queryExpression);
-        return response.Entities.Any();
+        foreach (var condition in conditions)
+            queryExpression.Criteria.AddCondition(condition);
+
+        return RetrieveAll(queryExpression).Any();
+    }
+    public async Task<bool> ExistsAsync(IEnumerable<ConditionExpression> conditions)
+    {
+        return await Task.FromResult(Exists(conditions));
     }
 
-    public async Task<bool> ExistsAsync(IEnumerable<ConditionExpression> conditions)
-        => await Task.FromResult(Exists(conditions));
+    public async Task<int> CountAsync(IEnumerable<ConditionExpression> conditions)
+    => await Task.FromResult(Count(conditions));
 
     public int Count(IEnumerable<ConditionExpression> conditions)
     {
@@ -134,9 +127,6 @@ public class CrmRepository<T> : IRepository<T> where T : Entity
 
         return RetrieveAll(queryExpression).Count();
     }
-
-    public async Task<int> CountAsync(IEnumerable<ConditionExpression> conditions)
-        => await Task.FromResult(Count(conditions));
 
     public void Associate(Guid sourceId, string relationshipName, EntityReferenceCollection targets)
         => _service.Associate(_entityLogicalName, sourceId, new Relationship(relationshipName), targets);
@@ -155,6 +145,8 @@ public class CrmRepository<T> : IRepository<T> where T : Entity
 
     public async Task<OrganizationResponse> ExecuteAsync(OrganizationRequest request)
         => await Task.FromResult(Execute(request));
+
+
 
     public Guid CreateWithRequest(T entity, Dictionary<string, object> inputParams = null)
     {
