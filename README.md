@@ -1,6 +1,6 @@
 # CrmRepository
 
-**CrmRepository** is a lightweight, generic repository abstraction for working with **Dataverse / Dynamics 365 CRM** using the `IOrganizationService` interface. It is designed to be easy to integrate, extend, and drop into your existing solution — no NuGet, no external dependencies, no magic.
+**CrmRepository** is a lightweight, generic repository abstraction for working with **Dataverse / Dynamics 365 CRM** using the `IOrganizationService` interface. It is designed to be easy to integrate, extend, and drop into your existing solution - no NuGet, no external dependencies, no magic.
 
 > Just copy two files: `IRepository.cs` and `CrmRepository.cs` into your CRM project and you're ready to go.
 
@@ -71,4 +71,4 @@ This repo is intended to be:
   - safe: no SDK version conflicts, no tight coupling
 
 ## License
-MIT License — free to use, copy, modify.
+MIT License - free to use, copy, modify.
