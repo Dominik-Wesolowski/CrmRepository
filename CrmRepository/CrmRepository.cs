@@ -6,6 +6,7 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Query;
 
+
 public class CrmRepository<T> : IRepository<T> where T : Entity
 {
     private readonly IOrganizationService _service;
@@ -63,16 +64,13 @@ public class CrmRepository<T> : IRepository<T> where T : Entity
     public async Task<Guid> CreateAsync(T entity)
         => await Task.FromResult(Create(entity));
 
-    public void Update(T entity, string rowVersion = null)
+    public void Update(T entity)
     {
-        if (!string.IsNullOrWhiteSpace(rowVersion))
-            entity.RowVersion = rowVersion;
-
         UpdateWithRequest(entity);
     }
 
-    public async Task UpdateAsync(T entity, string rowVersion = null)
-        => await Task.Run(() => Update(entity, rowVersion));
+    public async Task UpdateAsync(T entity)
+        => await Task.Run(() => Update(entity));
 
     public void Upsert(T entity)
     {
@@ -131,7 +129,9 @@ public class CrmRepository<T> : IRepository<T> where T : Entity
             Criteria = new FilterExpression()
         };
 
-        foreach (var condition in conditions) queryExpression.Criteria.AddCondition(condition);
+        foreach (var condition in conditions)
+            queryExpression.Criteria.AddCondition(condition);
+
         return RetrieveAll(queryExpression).Count();
     }
 
@@ -208,6 +208,7 @@ public class CrmRepository<T> : IRepository<T> where T : Entity
                 queryExpression.PageInfo.PagingCookie = response.PagingCookie;
             }
         }
+
         return results;
     }
 }
