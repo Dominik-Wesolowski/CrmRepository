@@ -8,6 +8,7 @@ namespace CrmRepository.Repository
 {
     public interface IRepository<T> where T : Entity
     {
+        int PendingCount { get; }
         T GetById(Guid id, ColumnSet columns = null);
         Task<T> GetByIdAsync(Guid id, ColumnSet columns = null);
 
@@ -64,12 +65,46 @@ namespace CrmRepository.Repository
 
         void UpdateMany(IEnumerable<T> entities, int batchSize = 200, bool continueOnError = false);
         Task UpdateManyAsync(IEnumerable<T> entities, int batchSize = 200, bool continueOnError = false);
+
         void UpsertMany(IEnumerable<T> entities, int batchSize = 200, bool continueOnError = false);
         Task UpsertManyAsync(IEnumerable<T> entities, int batchSize = 200, bool continueOnError = false);
+
         void DeleteMany(IEnumerable<Guid> ids, int batchSize = 200, bool continueOnError = false);
         Task DeleteManyAsync(IEnumerable<Guid> ids, int batchSize = 200, bool continueOnError = false);
 
         IReadOnlyList<OrganizationResponse> ExecuteTransaction(IEnumerable<OrganizationRequest> requests);
         Task<IReadOnlyList<OrganizationResponse>> ExecuteTransactionAsync(IEnumerable<OrganizationRequest> requests);
+
+        void AddObject(T entity, Dictionary<string, object> requestParameters = null);
+        void AddObjectRange(IEnumerable<T> entities, Dictionary<string, object> requestParameters = null);
+
+        void Attach(T entity, Dictionary<string, object> requestParameters = null);
+        void AttachRange(IEnumerable<T> entities, Dictionary<string, object> requestParameters = null);
+
+        void DeleteObject(Guid id, Dictionary<string, object> requestParameters = null);
+        void DeleteObject(T entity, Dictionary<string, object> requestParameters = null);
+        void DeleteObjectRange(IEnumerable<Guid> ids, Dictionary<string, object> requestParameters = null);
+        void DeleteObjectRange(IEnumerable<T> entities, Dictionary<string, object> requestParameters = null);
+
+        void UpsertObject(T entity, UpsertMode mode = UpsertMode.RequireKey,
+            Dictionary<string, object> requestParameters = null);
+
+        void UpsertObjectRange(IEnumerable<T> entities, UpsertMode mode = UpsertMode.RequireKey,
+            Dictionary<string, object> requestParameters = null);
+
+        void Attach(OrganizationRequest request);
+        void AttachRange(IEnumerable<OrganizationRequest> requests);
+
+        IReadOnlyList<object> SaveChanges(
+            RepositorySaveOptions options =
+                RepositorySaveOptions.ReturnResponses | RepositorySaveOptions.SuppressDuplicateDetection,
+            int batchSize = 200);
+
+        Task<IReadOnlyList<object>> SaveChangesAsync(
+            RepositorySaveOptions options =
+                RepositorySaveOptions.ReturnResponses | RepositorySaveOptions.SuppressDuplicateDetection,
+            int batchSize = 200);
+
+        void ClearPending();
     }
 }
